@@ -1,0 +1,44 @@
+# Compiler
+#CPP = i586-mingw32msvc-g++ -g
+CPP=g++.exe
+
+# Additional include directories
+#INCLUDES = -I"/usr/i586-mingw32msvc/include/lua5.1"
+
+# Libraries to be linked
+LIBS = -lmingw32 -lSDL -lSDL_image -llua5.1 -lws2_32
+
+# Additional flags to use during compilation
+CPPFLAGS = $(INCLUDES) -Wall -O2 -Dmain=SDL_main -DWITH_LUA
+
+# Object files to generate then link
+OBJS = SDL_win32_main.win.o main.win.o BomberLua.win.o Output.win.o Socket.win.o GameEngine.win.o NetworkReceiver.win.o Display.win.o LuaBomber.win.o PyBomber.win.o
+
+# Target (= binary)
+TARGET = bomberlua.exe
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+
+# Link
+$(TARGET): $(OBJS)
+	$(CPP) -o $@ $(OBJS) $(LIBS)
+
+# Make a .o from a .cpp
+%.win.o: %.cpp
+	$(CPP) -c $(CPPFLAGS) $< -o $@
+
+# Clean up
+clean:
+	del /f $(OBJS)
+#    rm -f $(OBJS)
+
+BomberLua.win.o: BomberLua.h Output.h Socket.h GameEngine.h NetworkReceiver.h
+Display.win.o: Display.h BomberLua.h
+GameEngine.win.o: GameEngine.h BomberLua.h lua.hpp
+main.win.o: BomberLua.h
+NetworkReceiver.win.o: NetworkReceiver.h BomberLua.h Socket.h
+Output.win.o: Output.h BomberLua.h Socket.h
+Socket.win.o: Socket.h
