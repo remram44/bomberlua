@@ -39,6 +39,9 @@ GameEngine::GameEngine(std::list<std::string> progs)
     m_Bombers.resize(progs.size());
     int i = 0;
     std::list<std::string>::const_iterator it = progs.begin();
+#ifdef WITH_PYTHON
+    bool py_loaded = false; // Limitation de Python - un seul bot python
+#endif
     for(; it != progs.end(); i++, it++)
     {
         int startx, starty;
@@ -70,7 +73,20 @@ GameEngine::GameEngine(std::list<std::string> progs)
 #endif
 #ifdef WITH_PYTHON
         if(file.substr(file.size() - 3) == ".py")
-            m_Bombers[i] = new PyBomber(this, startx, starty, file.c_str());
+        {
+            if(!py_loaded)
+            {
+                m_Bombers[i] = new PyBomber(this, startx, starty, file.c_str());
+                py_loaded = true;
+            }
+            else
+            {
+                std::cerr << file << " : impossible de charger plus d'un "
+                    "script Python ! (limitation au niveau de la lib Python...)"
+                    "\n";
+                exit(1);
+            }
+        }
         else
 #endif
         {
