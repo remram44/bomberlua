@@ -159,6 +159,7 @@ bool GameEngine::update()
             {
             case Engine::ACT_IDLE:
                 // Don't do anything
+                (*perso)->update();
                 break;
             case Engine::ACT_MOV_LEFT:
             case Engine::ACT_MOV_RIGHT:
