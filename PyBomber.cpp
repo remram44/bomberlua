@@ -33,28 +33,6 @@ PyObject *PyBomber::py_ready(PyObject *self, PyObject *args)
     return Py_None;
 }
 
-PyObject *PyBomber::py_wait(PyObject *self, PyObject *args)
-{
-    PyObject *module = PyImport_ImportModule("bomberlua");
-    PyObject *b = PyObject_GetAttrString(module, "__bomber__");
-    PyBomber *bomber = static_cast<PyBomber*>(((void *)PyCObject_AsVoidPtr(b)));
-
-    bomber->lock();
-
-    bomber->wait();
-
-    // On indique que le script a agit
-    SDL_CondSignal(bomber->m_CondScriptActed);
-
-    // On attend un signal pour reprendre l'exécution
-    SDL_CondWait(bomber->m_CondScriptResume, bomber->m_Mutex);
-
-    bomber->unlock();
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 PyObject *PyBomber::py_move(PyObject *self, PyObject *args)
 {
     char *direction;
@@ -235,8 +213,6 @@ PyBomber::PyBomber(GameEngine *engine, int startx, int starty,
         {"log", py_log, METH_VARARGS, "Permet d'enregistrer des informations"},
         {"ready", py_ready, METH_VARARGS, 
             "Indique que le script est initialisé"},
-        {"wait", py_wait, METH_VARARGS, 
-            "Indique que le script ne fait rien, mais n'est pas planté"},
         {"move", py_move, METH_VARARGS, "Se déplace. Les paramètres"
             "possibles sont \"left\", \"right\", \"up\", \"down\""},
         {"bomb", py_bomb, METH_VARARGS, "Pose une bombe"},

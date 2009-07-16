@@ -40,29 +40,6 @@ int LuaBomber::l_ready(lua_State *luaState)
     return 0;
 }
 
-int LuaBomber::l_wait(lua_State *luaState)
-{
-    // On récupère un pointeur sur le Bomber associé
-    lua_pushstring(luaState, "Bomber");
-    lua_gettable(luaState, LUA_REGISTRYINDEX);
-    LuaBomber *bomber =
-        *static_cast<LuaBomber**>(lua_touserdata(luaState, -1));
-
-    bomber->lock();
-
-    bomber->wait();
-
-    // On indique que le script a agit
-    SDL_CondSignal(bomber->m_CondScriptActed);
-
-    // On attend un signal pour reprendre l'exécution
-    SDL_CondWait(bomber->m_CondScriptResume, bomber->m_Mutex);
-
-    bomber->unlock();
-
-    return 0;
-}
-
 int LuaBomber::l_move(lua_State *luaState)
 {
     if(lua_gettop(luaState) != 1)
@@ -407,10 +384,6 @@ LuaBomber::LuaBomber(GameEngine *engine, int startx, int starty,
         // Ajout de bomb() pour poser une bombe
         lua_pushcfunction(m_LuaState, LuaBomber::l_bomb);
         lua_setglobal(m_LuaState, "bomb");
-        // Ajout de wait() pour ne rien faire actuellement mais ne pas passer
-        // pour un script planté
-        lua_pushcfunction(m_LuaState, LuaBomber::l_wait);
-        lua_setglobal(m_LuaState, "wait");
     }
 
     unlock();

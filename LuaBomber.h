@@ -20,10 +20,6 @@ private:
      * à commencer la partie */
     static int l_ready(lua_State *);
 
-    /** Fonction permettant à un script d'indiquer qu'il ne fait rien mais qu'il
-     * n'est pas planté */
-    static int l_wait(lua_State *);
-
     /** Fonction permettant de se déplacer ; le paramètre doit être "left",
      * "right", "up" ou "down" */
     static int l_move(lua_State *);

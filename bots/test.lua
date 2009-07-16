@@ -1,4 +1,3 @@
--- initialisation : définit des fonctions utiles
 function can_go(direction, bomber, map)
     if direction == "right"
       and (map[(bomber.posx + 1) .. "," .. bomber.posy] == "empty") then

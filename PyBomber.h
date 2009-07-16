@@ -16,7 +16,6 @@ private:
     /** Fonctions python, voir LuaBomber.h pour les descriptions */
     static PyObject *py_log(PyObject *, PyObject *);
     static PyObject *py_ready(PyObject *, PyObject *);
-    static PyObject *py_wait(PyObject *, PyObject *);
     static PyObject *py_move(PyObject *, PyObject *);
     static PyObject *py_bomb(PyObject *, PyObject *);
     static PyObject *py_get_self(PyObject *, PyObject *);
