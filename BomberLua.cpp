@@ -2,7 +2,6 @@
 
 #include "Output.h"
 
-#include "NetworkReceiver.h"
 #include "GameEngine.h"
 
 #include <string>
@@ -44,8 +43,6 @@ int BomberLua::init(int argc, char **argv)
 {
     bool graphic = false;  // affichage local ?
 
-    int server = -1;   // accepter les connexions sur ce port
-
     bool client = false;   // recevoir les données par le réseau ?
     const char *addr = NULL;
     int port = -1;
@@ -68,32 +65,6 @@ int BomberLua::init(int argc, char **argv)
             }
             else if(arg == "-i" || arg == "--graphic")
                 graphic = true;
-            else if(arg == "-s" || arg == "--server")
-            {
-                i++;
-                std::istringstream iss(argv[i]);
-                iss >> server;
-                if(iss.fail() || !iss.eof()
-                 || (server < 1) || (server > 65535) )
-                {
-                    std::cerr << "Numéro de port invalide\n";
-                    return 1;
-                }
-            }
-            else if(arg == "-c" || arg == "--client")
-            {
-                client = true;
-                i++;
-                addr = argv[i];
-                i++;
-                std::istringstream iss(argv[i]);
-                iss >> port;
-                if(iss.fail() || !iss.eof())
-                {
-                    std::cerr << "Numéro de port invalide\n";
-                    return 1;
-                }
-            }
             else
             {
                 std::cerr << "Option \"" << arg << "\" non-reconnue\n";
@@ -115,12 +86,10 @@ int BomberLua::init(int argc, char **argv)
     }
 
     // Créé le moteur
-    if(client) // soit un moteur récupérant les données depuis un serveur
-        m_pEngine = new NetworkReceiver(addr, port);
-    else // soit le véritable moteur du jeu qui va générer les informations
-        m_pEngine = new GameEngine(progs);
+    m_pEngine = new GameEngine(progs);
+    // TODO : ReplayEngine : moteur rejouant une partie enregistrée
 	
-	Output::init(graphic, server, m_pEngine); // initialise le module de rendu
+	Output::init(graphic, m_pEngine); // initialise le module de rendu
 	
     return 0;
 }
