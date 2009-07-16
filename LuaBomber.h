@@ -19,10 +19,6 @@ private:
     /** Function allowing a script to indicate it's ready to start the game */
     static int l_ready(lua_State *);
 
-    /** Function allowing a script to indicate it is not doing any action at
-     * this time but it didn't crash (time will proceed forward) */
-    static int l_wait(lua_State *);
-
     /** Function allowing a script to move; the parameter must be "left", "right", "up" or "down" */
     static int l_move(lua_State *);
 

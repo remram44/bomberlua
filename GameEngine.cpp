@@ -158,13 +158,7 @@ bool GameEngine::update()
             switch((*perso)->m_eAction)
             {
             case Engine::ACT_IDLE:
-                // If he hasn't done anything for more than 0.5s, it's crashed
-                if((*perso)->m_dBeginAction + 0.5 < (SDL_GetTicks()/1000.0))
-                {
-                    std::cerr << "timeout: killing script\n";
-                    (*perso)->kill();
-                }
-                (*perso)->update();
+                // Don't do anything
                 break;
             case Engine::ACT_MOV_LEFT:
             case Engine::ACT_MOV_RIGHT:
@@ -314,12 +308,6 @@ GameEngine::IABomber::IABomber(GameEngine *engine, int startx, int starty,
     const char *filename)
   : Engine::Bomber(filename, startx, starty), m_pEngine(engine)
 {
-}
-
-void GameEngine::IABomber::wait()
-{
-    // Mark that the script has acted
-    m_dBeginAction = SDL_GetTicks()/1000.0;
 }
 
 bool GameEngine::IABomber::move(const std::string &param)

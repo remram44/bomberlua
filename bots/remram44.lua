@@ -266,9 +266,7 @@ while 1 do
     log("scores: right = " .. scores.right .. ", up = " .. scores.up
         .. ", left = " .. scores.left .. ", down = " .. scores.down
         .. ", wait = " .. scores.wait, " choice: " .. moves[best])
-    if moves[best] == "wait" then
-        wait()
-    else
+    if moves[best] ~= "wait" then
         move(moves[best])
     end
 end

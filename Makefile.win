@@ -1,15 +1,23 @@
 # Compiler
 #CPP = i586-mingw32msvc-g++ -g
-CPP=g++.exe
+CPP = g++.exe
 
 # Additional include directories
 #INCLUDES = -I"/usr/i586-mingw32msvc/include/lua5.1"
 
 # Libraries to be linked
-LIBS = -lmingw32 -lSDL -lSDL_image -llua5.1 -lws2_32
+LIBS = -lmingw32 -lSDL -lSDL_image -lws2_32
 
 # Additional flags to use during compilation
-CPPFLAGS = $(INCLUDES) -Wall -O2 -Dmain=SDL_main -DWITH_LUA
+CPPFLAGS = $(INCLUDES) -Wall -O2 -Dmain=SDL_main
+
+# Lua support
+CPPFLAGS += -DWITH_LUA
+LIBS += -llua5.1
+
+# Python support
+CPPFLAGS += -DWITH_PYTHON
+LIBS += -lpython26
 
 # Object files to generate then link
 OBJS = SDL_win32_main.win.o main.win.o BomberLua.win.o Output.win.o Socket.win.o GameEngine.win.o NetworkReceiver.win.o Display.win.o LuaBomber.win.o PyBomber.win.o
@@ -42,3 +50,5 @@ main.win.o: BomberLua.h
 NetworkReceiver.win.o: NetworkReceiver.h BomberLua.h Socket.h
 Output.win.o: Output.h BomberLua.h Socket.h
 Socket.win.o: Socket.h
+LuaBomber.win.o: GameEngine.h
+PyBomber.win.o: GameEngine.h
