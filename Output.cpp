@@ -1,16 +1,8 @@
 #include "Output.h"
 
-void Output::init(bool graphic, int server, const Engine *engine)
+void Output::init(bool graphic, const Engine *engine)
 {
     get()->m_bGraphic = false;
-    if(server != -1)
-    {
-        get()->m_bServer = true;
-        get()->m_Socket.Listen(server);
-    }
-    else
-        get()->m_bServer = false;
-	
     if(graphic)
     {
         try
@@ -28,13 +20,6 @@ void Output::init(bool graphic, int server, const Engine *engine)
 
 bool Output::update(const Engine *engine)
 {
-    if(get()->m_bServer)
-    {
-        // TODO: Accept connections
-
-        // TODO: Send the data to clients
-    }
-
     if(get()->m_bGraphic)
     {
 		SDL_Event event;

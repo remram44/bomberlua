@@ -2,7 +2,6 @@
 
 #include "Output.h"
 
-#include "NetworkReceiver.h"
 #include "GameEngine.h"
 
 #include <string>
@@ -44,8 +43,6 @@ int BomberLua::init(int argc, char **argv)
 {
     bool graphic = false;  // local display?
 
-    int server = -1;   // accept connections on this port
-
     bool client = false;   // receive data from the network?
     const char *addr = NULL;
     int port = -1;
@@ -68,32 +65,6 @@ int BomberLua::init(int argc, char **argv)
             }
             else if(arg == "-i" || arg == "--graphic")
                 graphic = true;
-            else if(arg == "-s" || arg == "--server")
-            {
-                i++;
-                std::istringstream iss(argv[i]);
-                iss >> server;
-                if(iss.fail() || !iss.eof()
-                 || (server < 1) || (server > 65535) )
-                {
-                    std::cerr << "Invalid port number\n";
-                    return 1;
-                }
-            }
-            else if(arg == "-c" || arg == "--client")
-            {
-                client = true;
-                i++;
-                addr = argv[i];
-                i++;
-                std::istringstream iss(argv[i]);
-                iss >> port;
-                if(iss.fail() || !iss.eof())
-                {
-                    std::cerr << "Invalid port number\n";
-                    return 1;
-                }
-            }
             else
             {
                 std::cerr << "Unrecognized option \"" << arg << "\"\n";
@@ -114,12 +85,10 @@ int BomberLua::init(int argc, char **argv)
     }
 
     // Create the engine
-    if(client) // either an engine getting data from a server
-        m_pEngine = new NetworkReceiver(addr, port);
-    else // or the actual game engine which will generate that data
-        m_pEngine = new GameEngine(progs);
+    m_pEngine = new GameEngine(progs);
+    // TODO: ReplayEngine: engine replaying a recorded game
 	
-	Output::init(graphic, server, m_pEngine); // initialize the rendering module
+	Output::init(graphic, m_pEngine); // initialize the rendering module
 	
     return 0;
 }

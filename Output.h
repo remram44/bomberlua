@@ -2,7 +2,6 @@
 #define OUTPUT_H
 
 #include "BomberLua.h"
-#include "Socket.h"
 #include "Display.h"
 
 #include <SDL/SDL.h>
@@ -20,16 +19,9 @@
 class Output {
 
 private:
-    /** Indicates that we are acting as a server, sending data to clients that
-     * connect to us. */
-    bool m_bServer;
-
     /** Indicates whether we are using graphical output, displaying the data
-     * locally. */
+     * informations. */
     bool m_bGraphic;
-
-    /** The socket, listening if m_bServer is true. */
-    ServerSocket m_Socket;
 
 private:
     /**
@@ -45,7 +37,7 @@ public:
     /**
      * Initialize the module, via the selected application mode.
      */
-    static void init(bool graphic, int server, const Engine *engine);
+    static void init(bool graphic, const Engine *engine);
 
     /**
      * Update the output, by accepting connections, sending data, and/or
