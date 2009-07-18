@@ -16,8 +16,11 @@ static void help(std::ostream& out)
     out << "bomberlua [options] [programmes]\n"
         "Les options reconnues sont :\n"
         "  -h ou --help : affiche cette aide et quitte"
-        "  -i ou --graphic : active l'affichage graphique du jeu (avec SDL)\n"
-        "Exemple : bomberlua -i bots/test.lua bots/test.lua\n";
+        "  -i ou --graphic : active l'affichage graphique du jeu (avec SDL)"
+#ifdef _NO_GRAPHICS
+        " (désactivé)"
+#endif
+        "\nExemple : bomberlua -i bots/test.lua bots/test.lua\n";
 }
 
 BomberLua::BomberLua()
@@ -34,7 +37,7 @@ int BomberLua::launch(int argc, char **argv)
         return 1;
     if(ret == 2)
         return 0;
-    
+
     // Puis lance le jeu
     return get()->run();
 }
@@ -60,7 +63,15 @@ int BomberLua::init(int argc, char **argv)
                 return 2;
             }
             else if(arg == "-i" || arg == "--graphic")
+            {
+                #ifdef _NO_GRAPHICS
+                    std::cerr << "Option \"-i\" : l'affichage graphique est "
+                        "désactivé. Recompilez le programme si\nvous désirez "
+                        "l'utiliser.\n";
+                    return 1;
+                #endif
                 graphic = true;
+            }
             else
             {
                 std::cerr << "Option \"" << arg << "\" non-reconnue\n";
@@ -84,9 +95,9 @@ int BomberLua::init(int argc, char **argv)
     // Créé le moteur
     m_pEngine = new GameEngine(progs);
     // TODO : ReplayEngine : moteur rejouant une partie enregistrée
-	
-	Output::init(graphic, m_pEngine); // initialise le module de rendu
-	
+
+    Output::init(graphic, m_pEngine); // initialise le module de rendu
+
     return 0;
 }
 
@@ -105,7 +116,9 @@ int BomberLua::run()
         m_pEngine->endOutput();
 
         // On dort 0.05 secondes
+#ifndef _NO_GRAPHICS
         SDL_Delay(50);
+#endif
     }
 
     // Affiche le résultat sur la sortie

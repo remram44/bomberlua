@@ -89,12 +89,12 @@ private:
     std::vector<double> m_Explosions;
 
 public:
-	/**
-	 * Accesseur de la map.
-	 * 
-	 * Permet d'obtenir les données sur les cases de la map.
-	 */
-	const std::vector<Engine::ECell>& getMap() const;
+    /**
+     * Accesseur de la map.
+     *
+     * Permet d'obtenir les données sur les cases de la map.
+     */
+    const std::vector<Engine::ECell>& getMap() const;
 
     /**
      * Accesseur des personnages.

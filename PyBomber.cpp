@@ -110,10 +110,10 @@ PyObject *PyBomber::py_get_bombers(PyObject *self, PyObject *args)
         if( !(it == bomber) && (it->m_bAlive) )
         {
             //On crée les positions du bomber
-            PyList_Append(list, 
-                Py_BuildValue("(i,i)", it->m_iPosX, it->m_iPosY)); 
+            PyList_Append(list,
+                Py_BuildValue("(i,i)", it->m_iPosX, it->m_iPosY));
         }
-        //On les ajoutes à la liste 
+        //On les ajoutes à la liste
     }
     std::cerr << "\n";
     return list;
@@ -211,12 +211,12 @@ PyBomber::PyBomber(GameEngine *engine, int startx, int starty,
     //Charge python
     static PyMethodDef methods[] = {
         {"log", py_log, METH_VARARGS, "Permet d'enregistrer des informations"},
-        {"ready", py_ready, METH_VARARGS, 
+        {"ready", py_ready, METH_VARARGS,
             "Indique que le script est initialisé"},
         {"move", py_move, METH_VARARGS, "Se déplace. Les paramètres"
             "possibles sont \"left\", \"right\", \"up\", \"down\""},
         {"bomb", py_bomb, METH_VARARGS, "Pose une bombe"},
-        {"get_self", py_get_self, METH_VARARGS, 
+        {"get_self", py_get_self, METH_VARARGS,
             "Retourne la position du joueur sous forme de tuple"},
         {"get_bombers", py_get_bombers, METH_VARARGS, "Retourne les positions"
             " des autres joueurs sous forme de liste de tuple"},
@@ -349,5 +349,5 @@ void PyBomber::lock()
 void PyBomber::unlock()
 {
     SDL_UnlockMutex(m_Mutex);
-} 
+}
 #endif

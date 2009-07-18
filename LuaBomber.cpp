@@ -126,7 +126,7 @@ int LuaBomber::l_get_self(lua_State *luaState)
     lua_pushstring(luaState, "posy");
     lua_pushnumber(luaState, bomber->m_iPosY);
     lua_settable(luaState, -3);
-    
+
     bomber->unlock();
 
     return 1;
@@ -176,7 +176,7 @@ int LuaBomber::l_get_bombers(lua_State *luaState)
             lua_settable(luaState, -3);
         }
     }
-    
+
     return 1;
 }
 
@@ -452,6 +452,6 @@ void LuaBomber::lock()
 void LuaBomber::unlock()
 {
     SDL_UnlockMutex(m_Mutex);
-} 
+}
 
 #endif

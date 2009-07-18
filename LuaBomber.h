@@ -15,7 +15,7 @@ class LuaBomber : public GameEngine::IABomber {
 private:
     /** Fonction permettant à un script Lua d'enregistrer des informations */
     static int l_log(lua_State *);
-    
+
     /** Fonction permettant à un script d'indiquer qu'il est initialisé et prêt
      * à commencer la partie */
     static int l_ready(lua_State *);
