@@ -42,6 +42,8 @@ void Display::init(const Engine *engine) throw(InitException)
         get()->m_pBombermanSurface = loadImage("Images/SFX/Bomberman.png");
         get()->m_pBombSurface = loadImage("Images/SFX/Bomb.png");
         get()->m_pBoomSurface = loadImage("Images/SFX/Wave.png");
+        get()->m_pPwRangeSurface = loadImage("Images/Cells/PwRange.png");
+        get()->m_pPwSpeedSurface = loadImage("Images/Cells/PwSpeed.png");
     }
     catch(InitException &e)
     {
@@ -276,5 +278,7 @@ Display::~Display()
     SDL_FreeSurface(m_pBombermanSurface);
     SDL_FreeSurface(m_pBombSurface);
     SDL_FreeSurface(m_pBoomSurface);
+    SDL_FreeSurface(m_pPwRangeSurface);
+    SDL_FreeSurface(m_pPwSpeedSurface);
     SDL_Quit();
 }
