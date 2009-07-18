@@ -111,7 +111,7 @@ void Display::drawBombermen(std::vector<const Engine::Bomber*> bombers)
         {
             // Look how much time passed since the begining of the action to
             // deduce the position and the frame of the bomber
-            double timeElapsed = ((SDL_GetTicks()/1000.0) - (*it)->m_dBeginAction);
+            double timeElapsed = (getTicks() - (*it)->m_dBeginAction);
             int frameDrawed = (int)(timeElapsed*32);
 
             SDL_Rect blitPos;
@@ -172,7 +172,7 @@ void Display::drawBombs(std::vector<const Engine::Bomb*> bombs)
     for(; it != bombs.end(); it++)
     {
         // Check the remaining time to get the frame to be drawn
-        double remainingTime = ((*it)->m_dExplodeDate - SDL_GetTicks()/1000.0);
+        double remainingTime = ((*it)->m_dExplodeDate - getTicks());
         int frameDrawed = (int)(remainingTime*0.75);
 
         SDL_Rect blitPos;
@@ -197,7 +197,7 @@ void Display::drawExplosions(int width, int height,
     const std::vector<double>& explosions)
 {
     int x, y;
-    double now = SDL_GetTicks()/1000.0;
+    double now = getTicks();
     for(x = 1; x < width - 1; x++)
     {
         for(y = 1; y < height - 1; y++)

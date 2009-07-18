@@ -162,8 +162,7 @@ PyObject *PyBomber::py_get_field(PyObject *self, PyObject *args)
             // No wall; perhaps a bomb or an explosion?
             case Engine::CELL_EMPTY:
                 // An explosion
-                if(explosions[y * width + x]
-                 >= (SDL_GetTicks()/1000.0) )
+                if(explosions[y * width + x] >= getTicks())
                     type = Py_BuildValue("s", "explosion");
                 else
                 {
@@ -175,7 +174,7 @@ PyObject *PyBomber::py_get_field(PyObject *self, PyObject *args)
                         if( ((*bomb)->m_iPosX == x) && ((*bomb)->m_iPosY == y) )
                         {
                             type = Py_BuildValue("f", (*bomb)->m_dExplodeDate
-                                 - (SDL_GetTicks()/1000.0));
+                                 - getTicks());
                             break;
                         }
                     }

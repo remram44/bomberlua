@@ -6,6 +6,13 @@
 #include <string>
 
 /**
+ * Chronometer.
+ *
+ * Returns the number of seconds elapsed since the program started.
+ */
+double getTicks();
+
+/**
  * A game engine.
  *
  * The engine is the component that feeds data to the application. This can be
