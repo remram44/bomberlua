@@ -30,6 +30,8 @@ private:
     SDL_Surface *m_pBombermanSurface;
     SDL_Surface *m_pBombSurface;
     SDL_Surface *m_pBoomSurface;
+    SDL_Surface *m_pPwRangeSurface;
+    SDL_Surface *m_pPwSpeedSurface;
 
     void drawMapSurface(int width, int height,
         const std::vector<Engine::ECell> &map);
