@@ -2,54 +2,54 @@
 
 #include <sstream>
 
-void Display::init(const Engine *engine)
-    throw (InitException)
+static SDL_Surface *loadImage(const char *path) throw(Display::InitException)
+{
+    SDL_Surface *surf = IMG_Load(path);
+    if(!surf)
+    {
+        std::ostringstream oss;
+        oss << "Error loading: " << path << " : " << IMG_GetError ();
+        throw Display::InitException(oss.str());
+    }
+    return surf;
+}
+
+void Display::init(const Engine *engine) throw(InitException)
 {
     std::string err;
     if(SDL_Init(SDL_INIT_VIDEO))
     {
         err = "Error initializing SDL: ";
-        err += SDL_GetError ();
-        throw InitException (err.c_str ());
+        err += SDL_GetError();
+        throw InitException(err);
     }
 
     if(SDL_SetVideoMode(engine->getMapWidth()*32, engine->getMapHeight()*32, 32,
         SDL_HWSURFACE | SDL_DOUBLEBUF) == NULL)
     {
         err = "Error creating the window: ";
-        err += SDL_GetError ();
-        SDL_Quit ();
-        throw InitException (err.c_str ());
+        err += SDL_GetError();
+        SDL_Quit();
+        throw InitException(err);
     }
     SDL_WM_SetCaption("BomberLua", NULL);
 
     try
     {
-        loadImage (get()->m_pBrickSurface, "./Images/Cells/Brick.png");
-        loadImage (get()->m_pRockSurface, "./Images/Cells/Rock.png");
-        loadImage (get()->m_pEmptySurface, "./Images/Cells/Empty.png");
-        loadImage (get()->m_pBombermanSurface, "./Images/SFX/Bomberman.png");
-        loadImage (get()->m_pBombSurface , "./Images/SFX/Bomb.png");
-        loadImage (get()->m_pBoomSurface , "./Images/SFX/Wave.png");
+        get()->m_pBrickSurface = loadImage("Images/Cells/Brick.png");
+        get()->m_pRockSurface = loadImage("Images/Cells/Rock.png");
+        get()->m_pEmptySurface = loadImage("Images/Cells/Empty.png");
+        get()->m_pBombermanSurface = loadImage("Images/SFX/Bomberman.png");
+        get()->m_pBombSurface = loadImage("Images/SFX/Bomb.png");
+        get()->m_pBoomSurface = loadImage("Images/SFX/Wave.png");
     }
-    catch (InitException &e)
+    catch(InitException &e)
     {
-        SDL_Quit ();
+        SDL_Quit();
         throw e;
     }
 }
 
-void Display::loadImage (SDL_Surface *&surf, const char *path)
-    throw (InitException)
-{
-    surf = IMG_Load (path);
-    if (!surf)
-    {
-        std::ostringstream oss ("");
-        oss << "Error loading: " << path << " : " << IMG_GetError ();
-        throw InitException (oss.str().c_str ());
-    }
-}
 void Display::update(const Engine *engine)
 {
     const std::vector<Engine::ECell> map(engine->getMap());
@@ -63,12 +63,14 @@ void Display::update(const Engine *engine)
     Display::get()->drawBombermen(bombers);
 
     const std::vector<double>& explosions(engine->getExplosions());
-    Display::get()->drawExplosions(engine->getMapWidth(), engine->getMapHeight(), explosions);
+    Display::get()->drawExplosions(
+        engine->getMapWidth(), engine->getMapHeight(), explosions);
 
     SDL_Flip(SDL_GetVideoSurface());
 }
 
-void Display::drawMapSurface(int width, int height, const std::vector<Engine::ECell> &map)
+void Display::drawMapSurface(int width, int height,
+    const std::vector<Engine::ECell> &map)
 {
     SDL_Rect blitPos;
     blitPos.w = 32;
@@ -76,25 +78,24 @@ void Display::drawMapSurface(int width, int height, const std::vector<Engine::EC
     blitPos.x = 0;
     blitPos.y = 0;
     SDL_Surface *screen = SDL_GetVideoSurface();
-    for (int x=0; x<width; x++)
+    int x, y;
+    for(x = 0; x < width; x++)
     {
-        for (int y=0; y<height; y++)
+        for(y = 0; y < height; y++)
         {
-            blitPos.x = x*32;
-            blitPos.y = y*32;
+            blitPos.x = x * 32;
+            blitPos.y = y * 32;
 
-            switch (map[y * width + x])
+            switch(map[y * width + x])
             {
-                case Engine::CELL_BRICK:
-                    SDL_BlitSurface(m_pBrickSurface, NULL, screen, &blitPos);
+            case Engine::CELL_BRICK:
+                SDL_BlitSurface(m_pBrickSurface, NULL, screen, &blitPos);
                 break;
-
-                case Engine::CELL_ROCK:
-                    SDL_BlitSurface(m_pRockSurface, NULL, screen, &blitPos);
+            case Engine::CELL_ROCK:
+                SDL_BlitSurface(m_pRockSurface, NULL, screen, &blitPos);
                 break;
-
-                case Engine::CELL_EMPTY:
-                    SDL_BlitSurface(m_pEmptySurface, NULL, screen, &blitPos);
+            case Engine::CELL_EMPTY:
+                SDL_BlitSurface(m_pEmptySurface, NULL, screen, &blitPos);
                 break;
             }
         }
@@ -106,73 +107,61 @@ void Display::drawBombermen(std::vector<const Engine::Bomber*> bombers)
     std::vector<const Engine::Bomber*>::iterator it = bombers.begin();
     for(; it != bombers.end(); it++)
     {
-        if ((*it)->m_bAlive)
+        if((*it)->m_bAlive)
         {
-            //Look how much time passed since the begining of the action to deduce the position and the frame of the bomber.
+            // Look how much time passed since the begining of the action to
+            // deduce the position and the frame of the bomber
             double timeElapsed = ((SDL_GetTicks()/1000.0) - (*it)->m_dBeginAction);
-            int frameDrawed = (int)(timeElapsed/0.03125);
-            //std::cerr << "Frame drawed :" << frameDrawed << "/" << timeElapsed << "\n";
+            int frameDrawed = (int)(timeElapsed*32);
 
             SDL_Rect blitPos;
             blitPos.w = 32;
             blitPos.h = 32;
-            blitPos.x = (*it)->m_iPosX*32;//Position the bomber on the map.
+            blitPos.x = (*it)->m_iPosX*32;// Position the bomber on the map
             blitPos.y = (*it)->m_iPosY*32;
 
-            //std::cout << "Bomber pos : " << blitPos.x << "," << blitPos.y  << "(" << bombers[i]->m_iPosX << "," << bombers[i]->m_iPosY << ")" << std::endl;
-
-            //By default the bomber is motionless.
             SDL_Rect framePos;
             framePos.w = 32;
             framePos.h = 32;
-            framePos.x = 0;
-            framePos.y = 64;
-            //Offset the bomber if it is moving depending on the elapsed time.
-            //We define the frame to be drawn by the elapsed time.
-            //If it is planting a bomb or is static, we fix it in the cell it's in.
-            switch ((*it)->m_eAction)
+
+            // Offset the bomber if it is moving; the frame to draw is selected
+            // depending on elapsed time.
+            // If it is planting a bomb or is static, we fix it in the cell it's
+            // in.
+            switch((*it)->m_eAction)
             {
-                case Engine::ACT_MOV_LEFT:
-                    framePos.x = 32*frameDrawed;
-                    framePos.y = 96;
-                    blitPos.x -= 2*frameDrawed;
+            case Engine::ACT_MOV_LEFT:
+                framePos.x = 32*frameDrawed;
+                framePos.y = 96;
+                blitPos.x -= 2*frameDrawed;
                 break;
-                case Engine::ACT_MOV_RIGHT:
-                    framePos.x = 32*frameDrawed;
-                    framePos.y = 32;
-                    blitPos.x += 2*frameDrawed;
+            case Engine::ACT_MOV_RIGHT:
+                framePos.x = 32*frameDrawed;
+                framePos.y = 32;
+                blitPos.x += 2*frameDrawed;
                 break;
-                case Engine::ACT_MOV_UP:
-                    framePos.x = 32*frameDrawed;
-                    framePos.y = 0;
-                    blitPos.y -= 2*frameDrawed;
+            case Engine::ACT_MOV_UP:
+                framePos.x = 32*frameDrawed;
+                framePos.y = 0;
+                blitPos.y -= 2*frameDrawed;
                 break;
-                case Engine::ACT_MOV_DOWN:
-                    framePos.x = 32*frameDrawed;
-                    framePos.y = 64;
-                    blitPos.y += 2*frameDrawed;
+            case Engine::ACT_MOV_DOWN:
+                framePos.x = 32*frameDrawed;
+                framePos.y = 64;
+                blitPos.y += 2*frameDrawed;
                 break;
-                case Engine::ACT_DROP_BOMB:
-                    framePos.x = 0;
-                    framePos.y = 64;
-                break;
-                case Engine::ACT_IDLE:
-                    framePos.x = 0;
-                    framePos.y = 64;
-                    break;
-                default:
-                    framePos.x = 0;
-                    framePos.y = 64;
+            default:
+                framePos.x = 0;
+                framePos.y = 64;
                 break;
             }
-            //Check that the frame didn't go beyond the image.
-            if (framePos.x > 480)
+
+            // Check that the frame didn't go beyond the image.
+            if(framePos.x > 480)
                 framePos.x = 480;
 
-            //std::cerr << "Frame pos : " << framePos.x << "," << framePos.y  << "-" << frameDrawed << "/" << timeElapsed << "\n";
             SDL_BlitSurface(m_pBombermanSurface, &framePos,
                 SDL_GetVideoSurface(), &blitPos);
-
         }
     }
 }
@@ -182,37 +171,36 @@ void Display::drawBombs(std::vector<const Engine::Bomb*> bombs)
     std::vector<const Engine::Bomb*>::iterator it = bombs.begin();
     for(; it != bombs.end(); it++)
     {
-        //Check the remaining time to get the frame to be drawn.
+        // Check the remaining time to get the frame to be drawn
         double remainingTime = ((*it)->m_dExplodeDate - SDL_GetTicks()/1000.0);
-        int frameDrawed = (int)(remainingTime/1.33);
+        int frameDrawed = (int)(remainingTime*0.75);
 
         SDL_Rect blitPos;
         blitPos.w = 32;
         blitPos.h = 32;
-        blitPos.x = (*it)->m_iPosX*32;//Position the bomber on the map.
+        blitPos.x = (*it)->m_iPosX*32; // Position the bomber on the map
         blitPos.y = (*it)->m_iPosY*32;
 
-        //std::cout << "Bomber pos : " << blitPos.x << "," << blitPos.y  << "(" << bombers[i]->m_iPosX << "," << bombers[i]->m_iPosY << ")" << std::endl;
-
-        //By default the bomber is motionless.
+        // By default the bomber is motionless
         SDL_Rect framePos;
         framePos.w = 32;
         framePos.h = 32;
-        framePos.x = 32*frameDrawed;
+        framePos.x = 32 * frameDrawed;
         framePos.y = 0;
 
-        //std::cerr << "Frame pos : " << framePos.x << "," << framePos.y  << "-" << frameDrawed << "/" << timeElapsed << "\n";
         SDL_BlitSurface(m_pBombSurface, &framePos,
                         SDL_GetVideoSurface(), &blitPos);
-
     }
 }
 
-void Display::drawExplosions(int width, int height, const std::vector<double>& explosions)
+void Display::drawExplosions(int width, int height,
+    const std::vector<double>& explosions)
 {
-    for (int x=1; x<width-1; x++)
+    int x, y;
+    double now = SDL_GetTicks()/1000.0;
+    for(x = 1; x < width - 1; x++)
     {
-        for (int y=1; y<height-1; y++)
+        for(y = 1; y < height - 1; y++)
         {
             SDL_Rect blitPos;
             blitPos.x = x*32;
@@ -226,87 +214,59 @@ void Display::drawExplosions(int width, int height, const std::vector<double>& e
             framePos.w = 32;
             framePos.h = 32;
 
-            if (explosions[y*width+x] >= SDL_GetTicks()/1000.0)
+            // If there's an explosion on the current cell
+            if(explosions[y*width+x] >= now)
             {
-                if (explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
+                // We need to consider adjacent explosions to choose the image
+                // to display (to choose framePos.x and framePos.y)
+                int adjacent = 0;
+                if(explosions[(y-1)*width+x] >= now) adjacent++;
+                if(explosions[(y+1)*width+x] >= now) adjacent++;
+                if(explosions[y*width+(x-1)] >= now) adjacent++;
+                if(explosions[y*width+(x+1)] >= now) adjacent++;
 
-                    || explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
-
-                    || explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                    && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0)
+                if(adjacent >= 3)
                 {
                     framePos.x = 0;
                     framePos.y = 64;
                 }
-                else
+                else if( (explosions[(y-1)*width+x] >= now)
+                      && (explosions[(y+1)*width+x] >= now) )
                 {
-                    if (explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0
-                            && explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0)
-                    {
-                        framePos.x = 32;
-                        framePos.y = 32;
-                    }
-                    else if (explosions[(y-1)*width+x] >= SDL_GetTicks()/1000.0)
-                    {
-                        framePos.x = 64;
-                        framePos.y = 32;
-                    }
-                    else if (explosions[(y+1)*width+x] >= SDL_GetTicks()/1000.0)
-                    {
-                        framePos.x = 0;
-                        framePos.y = 32;
-                    }
-
-                    if (explosions[y*width+(x-1)] >= SDL_GetTicks()/1000.0
-                        && explosions[y*width+(x+1)] >= SDL_GetTicks()/1000.0)
-                    {
-                        framePos.x = 32;
-                        framePos.y = 0;
-                    }
-                    else if (explosions[y*width+x-1] >= SDL_GetTicks()/1000.0)
-                    {
-                        framePos.x = 64;
-                        framePos.y = 0;
-                    }
-                    else if (explosions[y*width+x+1] >= SDL_GetTicks()/1000.0)
-                    {
-                        framePos.x = 0;
-                        framePos.y = 0;
-                    }
+                    framePos.x = 32;
+                    framePos.y = 32;
+                }
+                else if(explosions[(y-1)*width+x] >= now)
+                {
+                    framePos.x = 64;
+                    framePos.y = 32;
+                }
+                else if(explosions[(y+1)*width+x] >= now)
+                {
+                    framePos.x = 0;
+                    framePos.y = 32;
+                }
+                else if( (explosions[y*width+(x-1)] >= now)
+                      && (explosions[y*width+(x+1)] >= now) )
+                {
+                    framePos.x = 32;
+                    framePos.y = 0;
+                }
+                else if(explosions[y*width+x-1] >= now)
+                {
+                    framePos.x = 64;
+                    framePos.y = 0;
+                }
+                else if(explosions[y*width+x+1] >= now)
+                {
+                    framePos.x = 0;
+                    framePos.y = 0;
                 }
                 SDL_BlitSurface(m_pBoomSurface, &framePos, SDL_GetVideoSurface(), &blitPos);
             }
-
         }
     }
 }
-
 
 Display::~Display()
 {
@@ -318,4 +278,3 @@ Display::~Display()
     SDL_FreeSurface(m_pBoomSurface);
     SDL_Quit();
 }
-

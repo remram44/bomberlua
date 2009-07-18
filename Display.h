@@ -1,4 +1,4 @@
-#ifndef DISPLAY
+#ifndef DISPLAY_H
 #define DISPLAY_H
 
 #include <SDL/SDL.h>
@@ -21,8 +21,8 @@
  *
  * This module handles drawing the current state of the application with SDL.
  */
-
 class Display {
+
 private:
     SDL_Surface *m_pBrickSurface;
     SDL_Surface *m_pRockSurface;
@@ -37,6 +37,7 @@ private:
     void drawBombs(const std::vector<const Engine::Bomb*> bombs);
     void drawExplosions(int width, int height, const std::vector<double>& explosions);
     ~Display();
+
 private:
     /**
      * Returns a pointer to the unique instance (pattern Singleton).
@@ -48,18 +49,21 @@ private:
     }
 
 public:
-    class InitException : public std::exception
-    {
-        const char *m_sError;
+    class InitException {
+
+    private:
+        std::string m_sError;
+
     public:
-        const char *what() 
-        { 
-            return m_sError; 
+        const char *what()
+        {
+            return m_sError.c_str();
         }
-        InitException (const char *s) 
-        { 
+        InitException(std::string s)
+        {
             m_sError = s;
         }
+
     };
 
     /**
@@ -70,13 +74,8 @@ public:
     /**
      * Initialize the display.
      */
-    static void init(const Engine *engine) throw (InitException);
+    static void init(const Engine *engine) throw(InitException);
 
-    /**
-     * Load an image.
-     */
-    static void loadImage (SDL_Surface *&surf, const char * path)
-        throw (InitException);
 };
 /** @} */
 
