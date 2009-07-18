@@ -10,6 +10,37 @@
 #include <sstream>
 #include <limits>
 
+#ifdef _TICKS_USE_SDL
+#ifndef _NO_GRAPHICS
+#include <SDL/SDL.h>
+#else
+#error _TICKS_USE_SDL defined but _NO_GRAPHICS set!
+#endif
+#else
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
+// Récupère le temps écoulé depuis le lancement du programme
+// Equivalent à SDL_GetTicks()/1000.0 mais ne dépend pas de SDL
+#ifndef _TICKS_USE_SDL
+double getTicks()
+{
+    static int init_sec = -1;
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    if(init_sec == -1)
+        init_sec = tv.tv_sec - 1; // On ne veut pas de précision, juste un
+                                  // compteur...
+    return tv.tv_sec - init_sec + 1000000.0 * tv.tv_usec;
+}
+#else
+double getTicks()
+{
+    return SDL_GetTicks()/1000.0;
+}
+#endif
+
 // Affiche l'aide
 static void help(std::ostream& out)
 {

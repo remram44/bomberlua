@@ -236,8 +236,7 @@ int LuaBomber::l_get_field(lua_State *luaState)
             // Pas de mur ; mais peut-être une bombe ou une explosion ?
             case Engine::CELL_EMPTY:
                 // Une explosion
-                if(explosions[y * width + x]
-                 >= (SDL_GetTicks()/1000.0) )
+                if(explosions[y * width + x] >= getTicks())
                     lua_pushstring(luaState, "explosion");
                 else
                 {
@@ -250,7 +249,7 @@ int LuaBomber::l_get_field(lua_State *luaState)
                         {
                             lua_pushnumber(luaState,
                                 (*bomb)->m_dExplodeDate
-                                 - (SDL_GetTicks()/1000.0));
+                                 - getTicks());
                             break;
                         }
                     }

@@ -5,7 +5,6 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <SDL/SDL_thread.h>
 
 #ifdef WITH_LUA
 class LuaBomber;

@@ -6,6 +6,13 @@
 #include <string>
 
 /**
+ * Compteur.
+ *
+ * Retourne le nombre de secondes écoulées depuis le lancement du programme.
+ */
+double getTicks();
+
+/**
  * Un moteur.
  *
  * Le moteur est la partie qui fournit les données au programme. Cela peut être

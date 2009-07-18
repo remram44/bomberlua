@@ -4,8 +4,6 @@
 #include <sstream>
 #include <cstdlib>
 #include <limits>
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
 
 GameEngine::GameEngine(std::list<std::string> progs)
 {
@@ -123,26 +121,26 @@ bool GameEngine::update()
 
             // Le perso se fait-il toucher par une explosion ?
             bool bExplode = m_Explosions[(*perso)->m_iPosY * m_iWidth
-                + (*perso)->m_iPosX] > (SDL_GetTicks()/1000.0);
+                + (*perso)->m_iPosX] > getTicks();
 
             if(!bExplode)
                 switch((*perso)->m_eAction)
                 {
                 case Engine::ACT_MOV_LEFT:
                     bExplode = m_Explosions[(*perso)->m_iPosY * m_iWidth
-                        + ( (*perso)->m_iPosX - 1)] > (SDL_GetTicks()/1000.0);
+                        + ( (*perso)->m_iPosX - 1)] > getTicks();
                     break;
                 case Engine::ACT_MOV_UP:
                     bExplode = m_Explosions[( (*perso)->m_iPosY - 1) * m_iWidth
-                        + (*perso)->m_iPosX] > (SDL_GetTicks()/1000.0);
+                        + (*perso)->m_iPosX] > getTicks();
                     break;
                 case Engine::ACT_MOV_RIGHT:
                     bExplode = m_Explosions[(*perso)->m_iPosY * m_iWidth
-                        + ( (*perso)->m_iPosX + 1)] > (SDL_GetTicks()/1000.0);
+                        + ( (*perso)->m_iPosX + 1)] > getTicks();
                     break;
                 case Engine::ACT_MOV_DOWN:
                     bExplode = m_Explosions[( (*perso)->m_iPosY + 1) * m_iWidth
-                        + (*perso)->m_iPosX] > (SDL_GetTicks()/1000.0);
+                        + (*perso)->m_iPosX] > getTicks();
                     break;
                 default:
                     break;
@@ -167,7 +165,7 @@ bool GameEngine::update()
             case Engine::ACT_MOV_UP:
             case Engine::ACT_MOV_DOWN:
                 // Un déplacement prend 0.5s
-                if(((*perso)->m_dBeginAction + 0.5) < (SDL_GetTicks()/1000.0))
+                if(((*perso)->m_dBeginAction + 0.5) < getTicks())
                 {
                     // S'il est fini, on met à jour la position
                     if((*perso)->m_eAction == Engine::ACT_MOV_LEFT)
@@ -186,7 +184,7 @@ bool GameEngine::update()
                 break;
             case Engine::ACT_DROP_BOMB:
                 // Poser une bombe prend 0.1s
-                if(((*perso)->m_dBeginAction + 0.1) < (SDL_GetTicks()/1000.0))
+                if(((*perso)->m_dBeginAction + 0.1) < getTicks())
                 {
                     // Si c'est fini, on peut bouger à nouveau
                     (*perso)->m_eAction = Engine::ACT_IDLE;
@@ -205,13 +203,12 @@ bool GameEngine::update()
     while(bomb != m_Bombs.end())
     {
         // Si elle explose
-        if((*bomb)->m_dExplodeDate < (SDL_GetTicks()/1000.0))
+        if((*bomb)->m_dExplodeDate < getTicks())
         {
             int x = (*bomb)->m_iPosX;
             int y = (*bomb)->m_iPosY;
 
-            m_Explosions[y * m_iWidth + x] =
-                (SDL_GetTicks()/1000.0) + 1.0;
+            m_Explosions[y * m_iWidth + x] = getTicks() + 1.0;
 
             static const int delta[4][2] = { {1, 0}, {0, -1}, {-1, 0}, {0, 1} };
 
@@ -241,11 +238,11 @@ bool GameEngine::update()
                     for(; it != m_Bombs.end(); it++)
                     {
                         // Explosera le prochain coup
-                        (*bomb)->m_dExplodeDate = SDL_GetTicks()/1000.0;
+                        (*bomb)->m_dExplodeDate = getTicks();
                     }
 
                     m_Explosions[y2 * m_iWidth + x2] =
-                        (SDL_GetTicks()/1000.0) + 1.0;
+                        getTicks() + 1.0;
                 }
             }
 
@@ -360,7 +357,7 @@ bool GameEngine::IABomber::move(const std::string &param)
 
     // On met à jour l'action
     m_eAction = eAction;
-    m_dBeginAction = SDL_GetTicks()/1000.0;
+    m_dBeginAction = getTicks();
 
     return true;
 }
@@ -387,10 +384,10 @@ void GameEngine::IABomber::bomb()
         // Pose une bombe
         bombs.push_back(new Engine::Bomb(
             m_iPosX, m_iPosY,
-            SDL_GetTicks()/1000.0 + 4.0, 1));
+            getTicks() + 4.0, 1));
         // TODO : stocker la portée dans Bomber et modifier via les bonus
     }
 
     m_eAction = Engine::ACT_DROP_BOMB;
-    m_dBeginAction = SDL_GetTicks()/1000.0;
+    m_dBeginAction = getTicks();
 }
