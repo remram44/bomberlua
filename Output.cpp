@@ -11,9 +11,9 @@ void Output::init(bool graphic, const Engine *engine)
             Display::init(engine);
             get()->m_bGraphic = true;
         }
-        catch (Display::InitException &e)
+        catch(Display::InitException &e)
         {
-            std::cerr << e.what () << std::endl;
+            std::cerr << e.what() << std::endl;
             std::cerr << "Mode graphique désactivé." << std::endl;
         }
     }
