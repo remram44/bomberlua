@@ -222,7 +222,7 @@ bool GameEngine::update()
                 int x2 = x;
                 int y2 = y;
                 // On boucle pour parcourir le nombre de cellules prévu
-                int c = (*bomb)->m_iCells;
+                int c = (*bomb)->m_iRange;
                 for(; c > 0; c--)
                 {
                     // On se déplace
@@ -308,7 +308,7 @@ const std::vector<double>& GameEngine::getExplosions() const
 
 GameEngine::IABomber::IABomber(GameEngine *engine, int startx, int starty,
     const char *filename)
-  : Engine::Bomber(filename, startx, starty), m_pEngine(engine)
+  : Engine::Bomber(filename, startx, starty), m_pEngine(engine), m_iBombRange(1)
 {
 }
 
@@ -387,7 +387,7 @@ void GameEngine::IABomber::bomb()
         // Pose une bombe
         bombs.push_back(new Engine::Bomb(
             m_iPosX, m_iPosY,
-            SDL_GetTicks()/1000.0 + 4.0, 1));
+            SDL_GetTicks()/1000.0 + 4.0, m_iBombRange));
         // TODO : stocker la portée dans Bomber et modifier via les bonus
     }
 

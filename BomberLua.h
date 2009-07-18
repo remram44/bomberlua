@@ -86,7 +86,7 @@ public:
         double m_dExplodeDate;
 
         /** Puissance (= nombre de cases qui seront touchées de chaque côté) */
-        int m_iCells;
+        int m_iRange;
 
     public:
         /**

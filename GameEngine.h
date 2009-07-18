@@ -34,6 +34,7 @@ public:
 
     protected:
         GameEngine *m_pEngine;
+        unsigned int m_iBombRange;
 
     protected:
         void wait();
