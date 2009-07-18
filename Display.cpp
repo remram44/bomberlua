@@ -219,50 +219,68 @@ void Display::drawExplosions(int width, int height,
             {
                 // We need to consider adjacent explosions to choose the image
                 // to display (to choose framePos.x and framePos.y)
-                int adjacent = 0;
-                if(explosions[(y-1)*width+x] >= now) adjacent++;
-                if(explosions[(y+1)*width+x] >= now) adjacent++;
-                if(explosions[y*width+(x-1)] >= now) adjacent++;
-                if(explosions[y*width+(x+1)] >= now) adjacent++;
+                bool up = (explosions[(y-1)*width+x] >= now);
+                bool down = (explosions[(y+1)*width+x] >= now);
+                bool left = (explosions[y*width+(x-1)] >= now);
+                bool right = (explosions[y*width+(x+1)] >= now);
 
-                if(adjacent >= 3)
+                if(up && down && left && right)
                 {
                     framePos.x = 0;
                     framePos.y = 64;
                 }
-                else if( (explosions[(y-1)*width+x] >= now)
-                      && (explosions[(y+1)*width+x] >= now) )
+                else if(up && down && right)
+                {
+                    framePos.x = 32;
+                    framePos.y = 64;
+                }
+                else if(down && left && right)
+                {
+                    framePos.x = 64;
+                    framePos.y = 64;
+                }
+                else if(up && down && left)
+                {
+                    framePos.x = 0;
+                    framePos.y = 96;
+                }
+                else if(up && left && right)
+                {
+                    framePos.x = 32;
+                    framePos.y = 96;
+                }
+                else if(up && down)
                 {
                     framePos.x = 32;
                     framePos.y = 32;
                 }
-                else if(explosions[(y-1)*width+x] >= now)
+                else if(up)
                 {
                     framePos.x = 64;
                     framePos.y = 32;
                 }
-                else if(explosions[(y+1)*width+x] >= now)
+                else if(down)
                 {
                     framePos.x = 0;
                     framePos.y = 32;
                 }
-                else if( (explosions[y*width+(x-1)] >= now)
-                      && (explosions[y*width+(x+1)] >= now) )
+                else if(left && right)
                 {
                     framePos.x = 32;
                     framePos.y = 0;
                 }
-                else if(explosions[y*width+x-1] >= now)
+                else if(left)
                 {
                     framePos.x = 64;
                     framePos.y = 0;
                 }
-                else if(explosions[y*width+x+1] >= now)
+                else if(right)
                 {
                     framePos.x = 0;
                     framePos.y = 0;
                 }
-                SDL_BlitSurface(m_pBoomSurface, &framePos, SDL_GetVideoSurface(), &blitPos);
+                SDL_BlitSurface(m_pBoomSurface, &framePos,
+                    SDL_GetVideoSurface(), &blitPos);
             }
         }
     }
