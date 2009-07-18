@@ -85,7 +85,7 @@ public:
         double m_dExplodeDate;
 
         /** Power (= number of cells that will be affected in each direction) */
-        int m_iCells;
+        int m_iRange;
 
     public:
         /**

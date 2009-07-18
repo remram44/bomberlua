@@ -170,6 +170,6 @@ Engine::Bomber::Bomber(const char *filename, int posX, int posY)
 
 Engine::Bomb::Bomb(int posX, int posY, double explodeDate, int cells)
   : m_iPosX(posX), m_iPosY(posY),
-    m_dExplodeDate(explodeDate), m_iCells(cells)
+    m_dExplodeDate(explodeDate), m_iRange(cells)
 {
 }

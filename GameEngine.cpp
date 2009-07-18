@@ -221,7 +221,7 @@ bool GameEngine::update()
                 int x2 = x;
                 int y2 = y;
                 // Loop to affect the selected number of cells
-                int c = (*bomb)->m_iCells;
+                int c = (*bomb)->m_iRange;
                 for(; c > 0; c--)
                 {
                     // Move
@@ -307,7 +307,7 @@ const std::vector<double>& GameEngine::getExplosions() const
 
 GameEngine::IABomber::IABomber(GameEngine *engine, int startx, int starty,
     const char *filename)
-  : Engine::Bomber(filename, startx, starty), m_pEngine(engine)
+  : Engine::Bomber(filename, startx, starty), m_pEngine(engine), m_iBombRange(1)
 {
 }
 
@@ -386,7 +386,7 @@ void GameEngine::IABomber::bomb()
         // Plant a bomb
         bombs.push_back(new Engine::Bomb(
             m_iPosX, m_iPosY,
-            SDL_GetTicks()/1000.0 + 4.0, 1));
+            SDL_GetTicks()/1000.0 + 4.0, m_iBombRange));
         // TODO: store the range in Bomber and change via powerups
     }
 
