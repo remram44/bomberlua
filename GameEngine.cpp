@@ -317,33 +317,45 @@ bool GameEngine::IABomber::move(const std::string &param)
     int width = m_pEngine->getMapWidth();
     const int &x = m_iPosX;
     const int &y = m_iPosY;
+    int x2, y2;
 
     Engine::EAction eAction = Engine::ACT_IDLE;
 
-    // TODO: Bombs block the way!
-    if( (param == "left") && (map[y * width + (x - 1)]
-        == Engine::CELL_EMPTY) )
+    if(param == "left")
     {
         eAction = Engine::ACT_MOV_LEFT;
+        x2 = x-1; y2 = y;
     }
-    else if( (param == "right") && (map[y * width + (x + 1)]
-    == Engine::CELL_EMPTY) )
+    else if(param == "right")
     {
         eAction = Engine::ACT_MOV_RIGHT;
+        x2 = x+1; y2 = y;
     }
-    else if( (param == "up") && (map[(y - 1) * width + x]
-        == Engine::CELL_EMPTY) )
+    else if(param == "up")
     {
         eAction = Engine::ACT_MOV_UP;
+        x2 = x; y2 = y-1;
     }
-    else if( (param == "down") && (map[(y + 1) * width + x]
-        == Engine::CELL_EMPTY) )
+    else if(param == "down")
     {
         eAction = Engine::ACT_MOV_DOWN;
+        x2 = x; y2 = y+1;
     }
-    else if( (param != "left") && (param != "right")
-     && (param != "up") && (param != "down") )
+    else
         return false;
+
+    // Blocked by terrain
+    if(map[y2 * width + x] != Engine::CELL_EMPTY)
+        return false;
+
+    // Blocked by bombs
+    const std::list<Engine::Bomb*> &bombs = m_pEngine->m_Bombs;
+    std::list<Engine::Bomb*>::const_iterator it = bombs.begin();
+    for(; it != bombs.end(); it++)
+    {
+        if( ((*it)->m_iPosX == x2) && ((*it)->m_iPosY == y2) )
+            return false;
+    }
 
     // Update the action
     m_eAction = eAction;
@@ -356,9 +368,9 @@ void GameEngine::IABomber::bomb()
 {
     // If there isn't already a bomb at this location
     bool alreadyABomb = false;
+    std::list<Engine::Bomb*> &bombs = m_pEngine->m_Bombs;
     {
-        std::vector<const Engine::Bomb*> bombs = m_pEngine->getBombs();
-        std::vector<const Engine::Bomb*>::const_iterator it = bombs.begin();
+        std::list<Engine::Bomb*>::const_iterator it = bombs.begin();
         for(; it != bombs.end(); it++)
         {
             if( ((*it)->m_iPosX == m_iPosX)
@@ -372,10 +384,10 @@ void GameEngine::IABomber::bomb()
     if(!alreadyABomb)
     {
         // Plant a bomb
-        m_pEngine->m_Bombs.push_back(new Engine::Bomb(
+        bombs.push_back(new Engine::Bomb(
             m_iPosX, m_iPosY,
             SDL_GetTicks()/1000.0 + 4.0, 1));
-        // TODO: store in Bomber and change via powerups
+        // TODO: store the range in Bomber and change via powerups
     }
 
     m_eAction = Engine::ACT_DROP_BOMB;

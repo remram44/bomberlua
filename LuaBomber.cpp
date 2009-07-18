@@ -57,9 +57,8 @@ int LuaBomber::l_move(lua_State *luaState)
 
         std::string param = lua_tostring(luaState, 1);
 
-        if(!bomber->move(param))
-            luaL_error(luaState, "move(): parameter \"%s\" unrecognized",
-                param.c_str());
+        bool ret = bomber->move(param);
+        lua_pushboolean(luaState, ret);
 
         // Mark that the script has acted
         SDL_CondSignal(bomber->m_CondScriptActed);
@@ -68,12 +67,15 @@ int LuaBomber::l_move(lua_State *luaState)
         SDL_CondWait(bomber->m_CondScriptResume, bomber->m_Mutex);
 
         bomber->unlock();
+
+        return 1;
     }
     else
+    {
         luaL_error(luaState, "move(): the parameter must be a string (and not "
             "%s)", lua_typename(luaState, lua_type(luaState, 1)));
-
-    return 0;
+        return 0;
+    }
 }
 
 int LuaBomber::l_bomb(lua_State *luaState)

@@ -43,10 +43,6 @@ int BomberLua::init(int argc, char **argv)
 {
     bool graphic = false;  // local display?
 
-    bool client = false;   // receive data from the network?
-    const char *addr = NULL;
-    int port = -1;
-
     // Programs to load
     std::list<std::string> progs;
 
