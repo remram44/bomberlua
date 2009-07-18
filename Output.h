@@ -2,9 +2,11 @@
 #define OUTPUT_H
 
 #include "BomberLua.h"
-#include "Display.h"
 
+#ifndef _NO_GRAPHICS
+#include "Display.h"
 #include <SDL/SDL.h>
+#endif
 
 /**
  * \defgroup output Output module for the application.
@@ -44,7 +46,7 @@ public:
      * displaying using SDL.
      */
     static bool update(const Engine *engine);
-	
+    
 };
 /** @} */
 

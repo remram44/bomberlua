@@ -90,12 +90,12 @@ private:
     std::vector<double> m_Explosions;
 
 public:
-	/**
-	 * Accessor for the map.
-	 * 
-	 * Allows one to get data on the cells of the map.
-	 */
-	const std::vector<Engine::ECell>& getMap() const;
+    /**
+     * Accessor for the map.
+     * 
+     * Allows one to get data on the cells of the map.
+     */
+    const std::vector<Engine::ECell>& getMap() const;
 
     /**
      * Accessor for the players.

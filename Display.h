@@ -24,19 +24,19 @@
 
 class Display {
 private:
-	SDL_Surface *m_pBrickSurface;
-	SDL_Surface *m_pRockSurface;
-	SDL_Surface *m_pEmptySurface;
-	SDL_Surface *m_pBombermanSurface;
-	SDL_Surface *m_pBombSurface;
-	SDL_Surface *m_pBoomSurface;
+    SDL_Surface *m_pBrickSurface;
+    SDL_Surface *m_pRockSurface;
+    SDL_Surface *m_pEmptySurface;
+    SDL_Surface *m_pBombermanSurface;
+    SDL_Surface *m_pBombSurface;
+    SDL_Surface *m_pBoomSurface;
 
-	void drawMapSurface(int width, int height,
+    void drawMapSurface(int width, int height,
         const std::vector<Engine::ECell> &map);
-	void drawBombermen(const std::vector<const Engine::Bomber*> bombers);
-	void drawBombs(const std::vector<const Engine::Bomb*> bombs);
-	void drawExplosions(int width, int height, const std::vector<double>& explosions);
-	~Display();
+    void drawBombermen(const std::vector<const Engine::Bomber*> bombers);
+    void drawBombs(const std::vector<const Engine::Bomb*> bombs);
+    void drawExplosions(int width, int height, const std::vector<double>& explosions);
+    ~Display();
 private:
     /**
      * Returns a pointer to the unique instance (pattern Singleton).
@@ -48,35 +48,35 @@ private:
     }
 
 public:
-	class InitException : public std::exception
-	{
-		const char *m_sError;
-	public:
-		const char *what() 
-		{ 
-			return m_sError; 
-		}
-		InitException (const char *s) 
-		{ 
-			m_sError = s;
-		}
-	};
+    class InitException : public std::exception
+    {
+        const char *m_sError;
+    public:
+        const char *what() 
+        { 
+            return m_sError; 
+        }
+        InitException (const char *s) 
+        { 
+            m_sError = s;
+        }
+    };
 
-	/**
-	 * Update the display data and render.
-	 */
-	static void update(const Engine *engine);
+    /**
+     * Update the display data and render.
+     */
+    static void update(const Engine *engine);
 
-	/**
-	 * Initialize the display.
-	 */
-	static void init(const Engine *engine) throw (InitException);
+    /**
+     * Initialize the display.
+     */
+    static void init(const Engine *engine) throw (InitException);
 
-	/**
-	 * Load an image.
-	 */
-	static void loadImage (SDL_Surface *&surf, const char * path)
-		throw (InitException);
+    /**
+     * Load an image.
+     */
+    static void loadImage (SDL_Surface *&surf, const char * path)
+        throw (InitException);
 };
 /** @} */
 
